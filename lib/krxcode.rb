@@ -2,5 +2,6 @@ require "krxcode/version"
 
 module Krxcode
   class Error < StandardError; end
-  # Your code goes here...
+
+  autoload :CLI, 'krxcode/cli'
 end

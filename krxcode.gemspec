@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "KRXcode/version"
+require "krxcode/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "KRXcode"
-  spec.version       = KRXcode::VERSION
+  spec.version       = Krxcode::VERSION
   spec.authors       = ["Krimpedance"]
   spec.email         = ["info@krimpedance.com"]
 
@@ -37,6 +37,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_dependency 'thor'
 
   spec.add_development_dependency "xcodeproj", "~> 1.8.2"
 end
