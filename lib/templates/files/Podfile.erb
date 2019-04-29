@@ -1,0 +1,43 @@
+# Podfile
+platform :ios, '11.0'
+use_frameworks!
+inhibit_all_warnings!
+
+# Actions
+
+def common_pods
+  ## Utility
+  pod "SwiftLint"
+	pod "KRFramework", git: "git@github.com:krimpedance/KRFramework.git"
+  pod "R.swift"
+
+<% common_pods.each do |pod| %><%= "  pod \"#{pod}\"\n" %><% end %>
+end
+
+def unit_test_pods
+  ## Like a rspec
+  pod "Quick"
+  pod "Nimble"
+
+<% test_pods.each do |pod| %><%= "  pod \"#{pod}\"\n" %><% end %>
+end
+
+# Targets
+
+target '<%= project_name %>' do
+  common_pods
+
+  # Utility
+  pod "LicensePlist"
+
+<% main_pods.each do |pod| %><%= "  pod \"#{pod}\"\n" %><% end %>
+
+  target '<%= project_name %>Tests' do
+    inherit! :search_paths
+    unit_test_pods
+  end
+
+  target '<%= project_name %>UITests' do
+    inherit! :search_paths
+  end
+end

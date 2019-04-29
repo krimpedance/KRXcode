@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# ruby version
+ruby_version="<%= RUBY_VERSION %>"
+
+# install rbenv-gem-rehash
+if [ ! -d ~/.rbenv/plugins/rbenv-gem-rehash ]; then
+  echo "----- Install rbenv-gem-rehash -----"
+  git clone git://github.com/sstephenson/rbenv-gem-rehash.git ~/.anyenv/envs/rbenv/plugins/rbenv-gem-rehash
+fi
+
+# install rbenv-binstubs
+if [ ! -d ~/.rbenv/plugins/rbenv-binstubs ]; then
+  echo "----- Install rbenv-binstubs -----"
+  git clone git://github.com/ianheggie/rbenv-binstubs.git ~/.anyenv/envs/rbenv/plugins/rbenv-binstubs
+fi
+
+# Fix Ruby version
+rbenv local $ruby_version
+
+# Bundler
+if [ ! -f ~/.anyenv/envs/rbenv/versions/$ruby_version/bin/bundler ]; then
+  echo "Install bundler"
+  rbenv exec gem install bundler
+fi
+
+# setup Gems
+echo "Install Gems"
+bundle install --path .bundle --binstubs .bundle/bin
+rbenv rehash
+
+# install dependencies via CocoaPods
+echo "Install dependencies via CocoaPods"
+.bundle/bin/pod install
+
+# install dependencies via Carthage
+# echo "Install dependencies via Carthage"
+# carthage bootstrap --no-use-binaries --cache-builds --platform ios
+
+# Git
+if [ -d ./.git ]; then
+  mkdir .git/safe
+else
+  git init
+  git add .
+  mkdir .git/safe
+fi
+
+echo "Enjoy 🍺"
+
+open <%= project_name %>.xcworkspace

@@ -1,18 +1,16 @@
 require 'krxcode'
 require 'thor'
+require 'krxcode/generator'
 
 module Krxcode
   class CLI < Thor
+    package_name "KRXcode"
 
     desc "version", "KRXcode version."
     def version
       puts Krxcode::VERSION
     end
 
-    desc "hello_world", "hello world test"
-    def hello_world
-      puts 'hello ;)'
-    end
-
+    register(Generator, "generate", "generate [COMMAND]", "generate commands.", alias: "g")
   end
 end
