@@ -1,4 +1,4 @@
-# Krxcode
+# KRXcode
 
 Xcode 周りの手抜きツール.
 
