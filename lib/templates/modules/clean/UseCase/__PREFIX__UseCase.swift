@@ -2,7 +2,7 @@
 //  __PREFIX__Presenter.swift
 //  __TARGET__
 //
-//  Copyright © __YEAR__ __ORGANIZER__. All rights reserved.
+//  Copyright © __YEAR__ __ORGANIZATION__. All rights reserved.
 //
 
 import Foundation

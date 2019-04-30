@@ -120,7 +120,7 @@ class Generator < Thor
     FileUtils.mkdir_p(module_path)
     FileUtils.cp_r(templates, module_path)
     script = Pathname.new(__dir__).join("../scripts/rename_module.sh")
-    system("#{script} #{module_path} #{name} #{configs[:target]} #{configs[:org]}")
+    system("#{script} '#{module_path}' '#{name}' '#{configs[:target]}' '#{configs[:org]}'")
 
     # Modify project file
 

@@ -1,2 +1,60 @@
 # <%= project_name %>
 
+## 概要
+
+これは iOS アプリ [<%= project_name %>] です.
+
+## 必要環境
+
++ Xcode 10.2+
++ Swift 5.0+
++ iOS 11.0+
++ Ruby <%= RUBY_VERSION %>
+
+## インストール
+
+クローン後, 以下のコマンドを実行してください.
+
+**事前に Bundler をインストールしておいてください. (`gem install bundler`)**
+
+```bash
+$ ./setup.sh
+```
+
+## 開発にあたって
+
+### Build Configuration & Scheme
+
+|スキーマ名|用途|
+|:--|:--|
+|<%= project_name %>-Development|開発環境用|
+|<%= project_name %>-Staging|テスト環境用|
+|<%= project_name %>-Production|本番環境用|
+
+それぞれ `Debug` , `Release` の Configuration があります.
+
+### マクロについて
+
+以下の4種類用意してあります
+
++ DEBUG
++ DEVELOPMENT
++ STAGING
++ PRODUCTION
+
+### モジュール（画面）の追加方法
+
+```bash
+$ bundle exec krxcode g module [モジュール名]
+```
+
+### ライブラリの管理
+
+CocoaPods を利用しています.
+
+```bash
+# Podfile を編集後, 以下のコマンドを実行
+$ bundle exec pod install
+# または
+$ bundle exec pod update
+```

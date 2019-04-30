@@ -1,29 +1,44 @@
-#!/usr/local/bin/bash
+#!/bin/sh
 
 export LANG=C
 
 base_path=$1
 
-declare -A variables=(
-  [__PREFIX__]=$2
-  [__TARGET__]=$3
-  [__ORGANIZATION__]=$4
-  [__DATE__]=`date "+%Y\\/%m\\/%d"`
-  [__YEAR__]=`date "+%Y"`
-  [__MONTH__]=`date "+%m"`
-  [__DAY__]=`date "+%d"`
+keys=(
+  __PREFIX__
+  __TARGET__
+  __ORGANIZATION__
+  __DATE__
+  __YEAR__
+  __MONTH__
+  __DAY__
+)
+
+values=(
+  "$2"
+  "$3"
+  "$4"
+  `date "+%Y\\/%m\\/%d"`
+  `date "+%Y"`
+  `date "+%m"`
+  `date "+%d"`
 )
 
 # Rename file and folder
 
-for key in ${!variables[@]}
+index=0
+
+for key in ${keys[@]}
 do
   paths=`find -d $base_path -name "*$key*"`
+
   for path in $paths
   do
-    replacePath=`dirname $path`/`basename $path | sed "s/$key/${variables[$key]}/g"`
+    replacePath=`dirname $path`/`basename $path | sed "s/$key/${values[$index]}/g"`
     mv $path $replacePath
   done
+
+  index=`expr $index + 1`
 done
 
 # Replace file texts
@@ -31,8 +46,10 @@ done
 files=`find $base_path -type f -print`
 for file in $files
 do
-  for key in ${!variables[@]}
+  index=0
+  for key in ${keys[@]}
   do
-    sed -i '' -e "s/$key/${variables[$key]}/g" $file
+    sed -i '' -e "s/$key/${values[$index]}/g" $file
+    index=`expr $index + 1`
   done
 done
