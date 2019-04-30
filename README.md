@@ -1,35 +1,54 @@
 # Krxcode
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/krxcode`. To experiment with that code, run `bin/console` for an interactive prompt.
+Xcode 周りの手抜きツール.
 
-TODO: Delete this and the text above, and describe your gem
++ プロジェクト生成 (MVP|MVVM|CleanArchitecture)
++ モジュールファイル群の生成
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
 ```ruby
-gem 'krxcode'
+# Gemfile
+gem 'krxcode', git: 'git@github.com:krimpedance/KRXcode.git'
 ```
 
-And then execute:
+もしくは,
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install krxcode
+```bash
+$ gem specific_install git@github.com:krimpedance/KRXcode.git
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+`krxcode help` で一覧見れます
 
-## Development
+### プロジェクト生成
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+以下のコマンドを実行, 必要な項目を埋めるとプロジェクトが生成されます.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```bash
+$ krxcode g project
+```
 
-## Contributing
+### モジュール（画面）生成
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/krxcode.
+モジュールに必要なファイル群をテンプレートから生成, プロジェクトに追加します.
+
+```bash
+$ krxcode g module [モジュール名]
+```
+
+設定情報は `KRXcode.yml` を編集します.
+
++ `TemplateDirectory` : テンプレートディレクトリのパス
++ `ProjectRoot` : プロジェクトのルートディレクトリのパス
++ `ProjectFileName` : プロジェクトファイル名 (`MyProject.xcodeproj`)
++ `Target` : ターゲット名
++ `Organization` : 組織名
++ `GenerateRoot` : 生成したファイルを置くディレクトリのパス（プロジェクト内でもこのパスに生成します）
+
+特定の設定ファイルを読み込ませたいときは以下のようにします.
+
+```bash
+$ krxcode g module [モジュール名] --config=MyConfig.yml
+```
