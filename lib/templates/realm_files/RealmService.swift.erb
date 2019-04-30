@@ -1,0 +1,124 @@
+//
+//  RealmService.swift
+//  <%= project_name %>
+//
+//  Copyright © <%= Time.now.strftime("%Y") %> <%= organization %>. All rights reserved.
+//
+
+import Foundation
+import RealmSwift
+import KRFramework
+
+extension Results {
+    var allObjects: [Element] { return compactMap { $0 } }
+}
+
+struct RealmService {
+    private static var basePath: URL {
+        return URL(string: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])!
+    }
+
+    private static var isTesting: Bool {
+        return NSClassFromString("XCTest") != nil // nil じゃなかったらテスト実行中
+    }
+
+    static let schemaVersion: UInt64 = 1
+
+    private init() {}
+}
+
+// MARK: - Set up ------------
+
+extension RealmService {
+    /// Realm.Configuration のラッパー.
+    /// テスト中ならオンメモリに強制.
+    @discardableResult
+    static func createConfiguration(fileName: String = "default",
+                                    inMemoryIdentifier: String? = nil,
+                                    syncConfiguration: SyncConfiguration? = nil,
+                                    encryptionKey: Data? = nil,
+                                    readOnly: Bool = false,
+                                    schemaVersion: UInt64 = schemaVersion,
+                                    migrationBlock: @escaping MigrationBlock = { _, _ in },
+                                    deleteRealmIfMigrationNeeded: Bool = false,
+                                    shouldCompactOnLaunch: Bool = true,
+                                    objectTypes: [Object.Type]? = nil,
+                                    isSetDefault: Bool = false) -> Realm.Configuration {
+
+        var compaction: ((Int, Int) -> Bool)? = { (totalBytes, usedBytes) -> Bool in
+            let oneHundredMB = 100 * 1024 * 1024
+            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+        }
+        if !shouldCompactOnLaunch { compaction = nil }
+
+        var config = Realm.Configuration(fileURL: basePath.appendingPathComponent("\(fileName).realm"),
+                                         inMemoryIdentifier: inMemoryIdentifier,
+                                         syncConfiguration: syncConfiguration,
+                                         encryptionKey: encryptionKey,
+                                         readOnly: readOnly,
+                                         schemaVersion: schemaVersion,
+                                         migrationBlock: migrationBlock,
+                                         deleteRealmIfMigrationNeeded: deleteRealmIfMigrationNeeded,
+                                         shouldCompactOnLaunch: compaction,
+                                         objectTypes: objectTypes)
+
+        // テスト中ならオンメモリにする
+        if isTesting { config.inMemoryIdentifier = fileName }
+
+        if isSetDefault { Realm.Configuration.defaultConfiguration = config }
+
+        return config
+    }
+}
+
+// MARK: - Save data ------------
+
+extension RealmService {
+    static func save<T: Object>(_ data: T, to realm: Realm, update: Bool = true) throws {
+        try realm.write { realm.add(data, update: update) }
+    }
+
+    static func save<T: Object>(_ datas: [T], to realm: Realm, update: Bool = true) throws {
+        try realm.write { realm.add(datas, update: update) }
+    }
+}
+
+// MARK: - Get data ------------
+
+extension RealmService {
+    static func getRefObject<T: Object>(from object: T, queue: DispatchQueue, completion: @escaping (T?) -> Void) {
+        autoreleasepool {
+            guard let config = object.realm?.configuration else { completion(nil); return }
+            let ref = ThreadSafeReference(to: object)
+            queue.async {
+                autoreleasepool {
+                    let realm = try? Realm(configuration: config)
+                    completion(realm?.resolve(ref))
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Delete data ------------
+
+extension RealmService {
+    // all data
+    static func deleteAll(in realm: Realm) throws {
+        try realm.write { realm.deleteAll() }
+    }
+
+    // all table data
+    static func deleteAllRecord<T: Object>(_ results: Results<T>, from realm: Realm) throws {
+        try realm.write { realm.delete(results) }
+    }
+
+    // record
+    static func delete<T: Object>(_ object: T, from realm: Realm) throws {
+        try realm.write { realm.delete(object) }
+    }
+
+    static func delete<T: Object>(_ objects: [T], from realm: Realm) throws {
+        try realm.write { realm.delete(objects) }
+    }
+}

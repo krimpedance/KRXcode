@@ -32,9 +32,14 @@ class Generator < Thor
       q.in = ["mvp", "mvvm", "clean"]
       q.default = "mvvm"
     end
-    cli.newline
 
-    # cli.say("<%= color('#{project_name}', :bold, :blue) %>")
+    database = cli.ask("Database (none|realm|firestore): ", String) do |q|
+      q.in = ["none", "realm", "firestore"]
+      q.default = "none"
+    end
+
+    cli.newline
+    cli.say("Generating <%= color('#{project_name}', :bold) %>...")
 
     project_dir = Pathname.new(Dir.pwd).join(project_name)
     target_dir = project_dir.join(project_name)
@@ -42,6 +47,7 @@ class Generator < Thor
     scripts_dir = Pathname.new(__dir__).join("../scripts")
     tmp_project_dir = Pathname.new(__dir__).join("../templates/project")
     tmp_files_dir = Pathname.new(__dir__).join("../templates/files")
+    tmp_realm_dir = Pathname.new(__dir__).join("../templates/realm_files")
 
     # Copy project base
     FileUtils.cp_r("#{tmp_project_dir}", "#{project_dir}")
@@ -57,6 +63,7 @@ class Generator < Thor
 
     # Copy files by architecture
     project = Xcodeproj::Project.open("#{project_dir.join("#{project_name}.xcodeproj")}")
+    target = project.targets.find do |t| t.name == project_name end
     target_group = project[project_name]
 
     common_pods = []
@@ -67,18 +74,45 @@ class Generator < Thor
     when "mvp"
 
     when "mvvm"
-      common_pods = ["RxSwift", "RxCocoa"]
-      main_pods = ["RxDataSources"]
-      test_pods = ["RxTest", "RxBlocking"]
+      common_pods.push("RxSwift", "RxCocoa")
+      main_pods.push("RxDataSources")
+      test_pods.push("RxTest", "RxBlocking")
 
     when "clean"
-      common_pods = ["RxSwift", "RxCocoa"]
-      main_pods = ["RxDataSources"]
-      test_pods = ["RxTest", "RxBlocking"]
+      common_pods.push("RxSwift", "RxCocoa")
+      main_pods.push("RxDataSources")
+      test_pods.push("RxTest", "RxBlocking")
 
       make_dir("Framework_Driver", target_dir, target_group)
       make_dir("Gateway", target_dir, target_group)
+    end
 
+    case database
+    when "none"
+
+    when "realm"
+      common_pods.push("RealmSwift")
+      common_pods.push("RxRealm") if architecture != "mvp"
+
+      utilities_group = target_group["Utilities"]
+
+      Dir.glob(tmp_realm_dir.join("*")).each do |file|
+        erb = ERB.new(IO.read(file), nil, "%")
+
+        original_name = File.basename(file)
+        original_name.slice!(".erb")
+        original_file = target_dir.join("Utilities/#{original_name}")
+
+        File.open(original_file, "w") do |f|
+          f.write(erb.result(binding))
+        end
+
+        file_ref = utilities_group.new_file(original_name)
+        target.source_build_phase.add_file_reference file_ref
+      end
+
+    when "firestore"
+      common_pods.push("Firebase/Core", "Firebase/Auth", "Firebase/Firestore")
     end
 
     Dir.glob(tmp_files_dir.join("*")).each do |file|
@@ -104,6 +138,8 @@ class Generator < Thor
 
     # Permission of setup.sh
     FileUtils.chmod(0755, project_dir.join("setup.sh"))
+
+    cli.say("Completed!! 🍺")
   end
 
   desc "module [Module name]", "generate new module files."

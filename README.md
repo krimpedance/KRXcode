@@ -9,7 +9,7 @@ Xcode 周りの手抜きツール.
 
 ```ruby
 # Gemfile
-gem 'krxcode', git: 'git@github.com:krimpedance/KRXcode.git'
+gem 'KRXcode', git: 'git@github.com:krimpedance/KRXcode.git'
 ```
 
 もしくは,
