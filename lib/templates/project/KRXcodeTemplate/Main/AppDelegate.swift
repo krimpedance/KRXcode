@@ -15,13 +15,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Application
-        _ = Application.shared
 
-        // Router
-        window = UIWindow()
-        router = RootRouter(window: window!)
-        router.start()
+        if #available(iOS 13, *) {
+        } else {
+            // Application
+            _ = Application.shared
+
+            // Router
+            window = UIWindow()
+            router = RootRouter(window: window!)
+            router.start()
+        }
 
         return true
     }
