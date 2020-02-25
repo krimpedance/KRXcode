@@ -74,12 +74,24 @@ extension RealmService {
 // MARK: - Save data ------------
 
 extension RealmService {
-    static func save<T: Object>(_ data: T, to realm: Realm, update: Bool = true) throws {
-        try realm.write { realm.add(data, update: update) }
+    static func save<T: Object>(_ data: T, to realm: Realm, update: Realm.UpdatePolicy? = .modified) throws {
+        try realm.write {
+            if let update = update {
+                realm.add(data, update: update)
+            } else {
+                realm.add(data)
+            }
+        }
     }
 
-    static func save<T: Object>(_ datas: [T], to realm: Realm, update: Bool = true) throws {
-        try realm.write { realm.add(datas, update: update) }
+    static func save<T: Object>(_ datas: [T], to realm: Realm, update: Realm.UpdatePolicy? = .modified) throws {
+        try realm.write {
+            if let update = update {
+                realm.add(datas, update: update)
+            } else {
+                realm.add(datas)
+            }
+        }
     }
 }
 
