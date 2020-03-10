@@ -295,7 +295,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1020;
 				LastUpgradeCheck = 1110;
-				ORGANIZATIONNAME = KRXcodeOrganization;
+				ORGANIZATIONNAME = "KRXcodeOrganization";
 				TargetAttributes = {
 					6B4BF38C22719DA700DBF6CD = {
 						CreatedOnToolsVersion = 10.2.1;
