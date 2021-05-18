@@ -40,5 +40,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'thor'
   spec.add_dependency 'highline'
-  spec.add_dependency "xcodeproj", ">= 1.10.0"
+  spec.add_dependency "xcodeproj", ">= 1.19.0"
 end
