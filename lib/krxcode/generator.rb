@@ -147,6 +147,7 @@ class Generator < Thor
   def module(name)
     cli = HighLine.new
 
+    lower_name = name.tap{ |s| s.sub!(s[0], s[0].downcase) }
     configs = load_yml(options[:config])
     module_path = Pathname.new("#{configs[:gen_root]}").join(name)
     tmp_dir = Pathname.new("#{configs[:tmp_dir]}")
@@ -156,7 +157,7 @@ class Generator < Thor
     FileUtils.mkdir_p(module_path)
     FileUtils.cp_r(templates, module_path)
     script = Pathname.new(__dir__).join("../scripts/rename_module.sh")
-    system("#{script} '#{module_path}' '#{name}' '#{configs[:target]}' '#{configs[:org]}'")
+    system("#{script} '#{module_path}' '#{name}' '#{lower_name}' '#{configs[:target]}' '#{configs[:org]}'")
 
     # Modify project file
 

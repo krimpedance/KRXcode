@@ -6,6 +6,7 @@ base_path=$1
 
 keys=(
   __PREFIX__
+  __LOWER_PREFIX__
   __TARGET__
   __ORGANIZATION__
   __DATE__
@@ -18,6 +19,7 @@ values=(
   "$2"
   "$3"
   "$4"
+  "$5"
   `date "+%Y\\/%m\\/%d"`
   `date "+%Y"`
   `date "+%m"`
