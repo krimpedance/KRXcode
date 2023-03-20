@@ -147,7 +147,7 @@ class Generator < Thor
   def module(name)
     cli = HighLine.new
 
-    lower_name = name.tap{ |s| s.sub!(s[0], s[0].downcase) }
+    lower_name = name.dup.tap{ |s| s.sub!(s[0], s[0].downcase) }
     configs = load_yml(options[:config])
     module_path = Pathname.new("#{configs[:gen_root]}").join(name)
     tmp_dir = Pathname.new("#{configs[:tmp_dir]}")

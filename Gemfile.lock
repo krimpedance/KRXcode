@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    KRXcode (0.3.5)
+    KRXcode (0.3.6)
       highline
       thor
       xcodeproj (>= 1.22.0)
